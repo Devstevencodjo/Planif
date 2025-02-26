@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.plannif.dao.TaskDao
 import com.example.plannif.entity.Task
+import com.example.plannif.entity.TaskPriority
 import com.example.plannif.api.ApiService
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
@@ -16,15 +17,23 @@ class TaskViewModel(
 
     val tasks: Flow<List<Task>> = taskDao.getAllTasks()
 
-    fun addTask(title: String) {
+    fun addTask(title: String, priority: TaskPriority = TaskPriority.MEDIUM, reminderTime: Long? = null) {
         viewModelScope.launch {
             try {
-                taskDao.insertTask(Task(title = title))
+                taskDao.insertTask(Task(title = title, priority = priority, reminderTime = reminderTime))
             } catch (e: Exception) {
                 Log.e("TASK", "Erreur lors de l'ajout : ${e.message}")
             }
         }
     }
+
+
+    fun updateTask(task: Task) {
+        viewModelScope.launch {
+            taskDao.updateTask(task)
+        }
+    }
+
 
     fun deleteTask(task: Task) {
         viewModelScope.launch {
